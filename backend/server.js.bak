@@ -1,0 +1,124 @@
+const express = require('express');
+const cors = require('cors');
+const mysql = require('mysql2');
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const db = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'ntokozs_techhub_store',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+}).promise();
+
+app.get('/api/test', async (req, res) => {
+    res.json({ message: 'Server is working!' });
+});
+
+app.get('/api/test-db', async (req, res) => {
+    try {
+        const [result] = await db.execute('SELECT 1+1 as test');
+        res.json({ success: true, test: result[0].test });
+    } catch (error) {
+        res.json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/products', async (req, res) => {
+    try {
+        const [products] = await db.execute(`
+            SELECT p.*, c.name as category_name 
+            FROM products p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            ORDER BY p.created_at DESC
+        `);
+        res.json(products);
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Failed to fetch products' });
+    }
+});
+
+app.get('/api/products/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        console.log('Searching for product ID:', productId);
+        
+        const [products] = await db.execute(
+            'SELECT * FROM products WHERE id = ?',
+            [productId]
+        );
+        
+        console.log('Found products:', products.length);
+        
+        if (products.length === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        
+        const product = products[0];
+        
+        if (product.specs && typeof product.specs === 'string') {
+            try {
+                product.specs = JSON.parse(product.specs);
+            } catch (e) {
+                product.specs = {};
+            }
+        }
+        
+        const [category] = await db.execute(
+            'SELECT name as category_name FROM categories WHERE id = ?',
+            [product.category_id]
+        );
+        product.category_name = category.length > 0 ? category[0].category_name : null;
+        
+        const [reviews] = await db.execute(
+            'SELECT * FROM reviews WHERE product_id = ?',
+            [productId]
+        );
+        product.reviews = reviews;
+        
+        res.json(product);
+    } catch (error) {
+        console.error('Error in /api/products/:id:', error);
+        res.status(500).json({ error: 'Failed to fetch product: ' + error.message });
+    }
+});
+
+app.get('/api/categories', async (req, res) => {
+    try {
+        const [categories] = await db.execute('SELECT * FROM categories ORDER BY name');
+        res.json(categories);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+});
+
+app.get('/api/featured-products', async (req, res) => {
+    try {
+        const [products] = await db.execute(`
+            SELECT p.*, c.name as category_name 
+            FROM products p 
+            LEFT JOIN categories c ON p.category_id = c.id 
+            WHERE p.featured = TRUE LIMIT 8
+        `);
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch featured products' });
+    }
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`✅ Ntokozs Techhub Store server running on port ${PORT}`);
+    console.log(`📍 Test: http://localhost:${PORT}/api/test`);
+    console.log(`📍 Test DB: http://localhost:${PORT}/api/test-db`);
+    console.log(`📍 Products: http://localhost:${PORT}/api/products`);
+    console.log(`📍 Product 1: http://localhost:${PORT}/api/products/1`);
+});
