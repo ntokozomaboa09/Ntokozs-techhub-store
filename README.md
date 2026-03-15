@@ -2,8 +2,6 @@
 
 A complete, full-stack e-commerce website for gaming electronics, featuring a clean blue and white theme inspired by Incredible Connection. Built with Node.js, Express, MySQL, and vanilla JavaScript.
 
-![Ntokozs Techhub Store Screenshot](https://via.placeholder.com/800x400?text=Ntokozs+Techhub+Store+Screenshot)
-
 ## ✨ Features
 
 ### 🛍️ Customer Features
@@ -15,7 +13,7 @@ A complete, full-stack e-commerce website for gaming electronics, featuring a cl
 - **Shopping Cart** - Add/remove products, update quantities
 - **User Authentication** - Register and login securely
 - **Checkout System** - Place orders with shipping information
-- **Order History** - View past orders (coming soon)
+- **Order History** - View past orders
 
 ### 👑 Admin Features
 - **Admin Dashboard** - View store statistics
@@ -36,7 +34,6 @@ A complete, full-stack e-commerce website for gaming electronics, featuring a cl
 - **Express.js** - Web framework
 - **MySQL** - Database
 - **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
 
 ### Frontend
 - **HTML5** - Structure
