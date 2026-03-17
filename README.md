@@ -2,6 +2,26 @@
 
 A complete, full-stack e-commerce website for gaming electronics, featuring a clean blue and white theme inspired by Incredible Connection. Built with Node.js, Express, MySQL, and vanilla JavaScript.
 
+## 📸 Screenshots
+
+### Homepage
+![Homepage](./images/homepage.png)
+
+### Products Page
+![Products Page](./images/products.png)
+
+### Product Details
+![Product Details](./images/product%20details.png)
+
+### Shopping Cart
+![Shopping Cart](./images/cart.png)
+
+### Login & Register
+![Login & Register](./images/login.png)
+
+### Admin Dashboard
+![Admin Dashboard](./images/admin.png)
+
 ## ✨ Features
 
 ### 🛍️ Customer Features
